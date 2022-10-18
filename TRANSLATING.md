@@ -23,3 +23,10 @@ pub fn get_translation() -> Translation {
     }
 }
 ```
+
+3. Add translation path to the beginning of `src/locale/mod.rs`
+
+```
+#[path = "lang/locale_YOUR_LANGUAGE_CODE.rs"]
+mod locale_YOUR_LANGUAGE_CODE;
+```
