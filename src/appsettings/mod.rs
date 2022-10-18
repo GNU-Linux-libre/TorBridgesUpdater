@@ -114,7 +114,33 @@ impl AppSettings {
 
     pub fn load() -> AppSettings {
         let config_paths = get_config_paths();
-        
+
+        let dirpath = get_save_paths();
+
+        let config_default = object!{
+            lastretrievaltime: 0,
+            time: SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs(),
+            days: 0,
+            hours: 1,
+            minutes: 0,
+            seconds: 0,
+            savetorrc: false,
+            savetorrcpath: dirpath.clone().0,
+            savebridges: true,
+            savebridgespath: dirpath.clone().1,
+            torrcdisableold: true,
+            keepold: true,
+            useproxy: false,
+            proxytype: 0,
+            proxyhost: "127.0.0.1".to_string(),
+            proxyport: 8118,
+            transport: 0,
+            ipv6: false,
+            proxyonion: false,
+            notifications: false,
+            runinbackground: false,
+        };
+
         #[allow(unused_assignments)]
         let mut config = object!{};
         if !Path::new(&config_paths.1).exists() {
@@ -122,46 +148,82 @@ impl AppSettings {
                 fs::create_dir(&config_paths.0).expect("Error accessing system config directory");
             }
 
-            let mut fileconfig = OpenOptions::new().write(true).create(true).open(config_paths.1).unwrap();
+            let mut fileconfig = OpenOptions::new().write(true).create(true).open(config_paths.1.clone()).unwrap();
 
-            let dirpath = get_save_paths();
-
-            config = object!{
-                lastretrievaltime: 0,
-                time: SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs(),
-                days: 0,
-                hours: 1,
-                minutes: 0,
-                seconds: 0,
-                savetorrc: false,
-                savetorrcpath: dirpath.clone().0,
-                savebridges: true,
-                savebridgespath: dirpath.clone().1,
-                torrcdisableold: true,
-                keepold: true,
-                useproxy: false,
-                proxytype: 0,
-                proxyhost: "127.0.0.1".to_string(),
-                proxyport: 8118,
-                transport: 0,
-                ipv6: false,
-                proxyonion: false,
-                notifications: false,
-                runinbackground: false,
-            };
-
-            fileconfig.write_all(config.dump().as_bytes()).unwrap();
+            fileconfig.write_all(config_default.clone().dump().as_bytes()).unwrap();
 
             fileconfig.sync_all().unwrap();
 
         } else {
-            let mut fileconfig = OpenOptions::new().read(true).open(config_paths.1).unwrap();
+            let mut fileconfig = OpenOptions::new().read(true).open(config_paths.1.clone()).unwrap();
             let mut config_text = String::new();
             fileconfig.read_to_string(&mut config_text).unwrap();
-            config = parse(&config_text).unwrap();
+            match parse(&config_text) {
+                Ok(config_parsed) => {
+                    config = config_parsed
+                },
+                Err(_) => {
+                    config = config_default.clone();
+                    let mut fileconfigoverwrite = OpenOptions::new().write(true).create(true).truncate(true).open(config_paths.1.clone()).unwrap();
+                    fileconfigoverwrite.write_all(config_default.clone().dump().as_bytes()).unwrap();
+                    fileconfigoverwrite.sync_all().unwrap();
+                },
+            }
 
         }
 
+        if config["lastretrievaltime"].as_i64() == None ||
+        config["time"].as_i64() == None ||
+        config["days"].as_i64() == None ||
+        config["hours"].as_i64() == None ||
+        config["minutes"].as_i64() == None ||
+        config["seconds"].as_i64() == None ||
+        config["savetorrc"].as_bool() == None ||
+        config["savetorrcpath"].as_str() == None ||
+        config["savebridges"].as_bool() == None ||
+        config["savebridgespath"].as_str() == None ||
+        config["torrcdisableold"].as_bool() == None ||
+        config["keepold"].as_bool() == None ||
+        config["useproxy"].as_bool() == None ||
+        config["proxytype"].as_i64() == None ||
+        config["proxyhost"].as_str() == None ||
+        config["proxyport"].as_i64() == None ||
+        config["proxyonion"].as_bool() == None ||
+        config["transport"].as_i64() == None ||
+        config["ipv6"].as_bool() == None ||
+        config["notifications"].as_bool() == None ||
+        config["runinbackground"].as_bool() == None {
+            let mut fileconfigoverwrite = OpenOptions::new().write(true).create(true).truncate(true).open(config_paths.1.clone()).unwrap();
+            fileconfigoverwrite.write_all(config_default.clone().dump().as_bytes()).unwrap();
+            fileconfigoverwrite.sync_all().unwrap();
+
+            return glib::Object::new(&[
+                ("lastretrievaltime", &config_default["lastretrievaltime"].as_i64().unwrap()),
+                ("time", &config_default["time"].as_i64().unwrap()),
+                ("days", &config_default["days"].as_i64().unwrap()),
+                ("hours", &config_default["hours"].as_i64().unwrap()),
+                ("minutes", &config_default["minutes"].as_i64().unwrap()),
+                ("seconds", &config_default["seconds"].as_i64().unwrap()),
+                ("savetorrc", &config_default["savetorrc"].as_bool().unwrap()),
+                ("savetorrcpath", &config_default["savetorrcpath"].as_str().unwrap()),
+                ("savebridges", &config_default["savebridges"].as_bool().unwrap()),
+                ("savebridgespath", &config_default["savebridgespath"].as_str().unwrap()),
+                ("torrcdisableold", &config_default["torrcdisableold"].as_bool().unwrap()),
+                ("keepold", &config_default["keepold"].as_bool().unwrap()),
+                ("useproxy", &config_default["useproxy"].as_bool().unwrap()),
+                ("proxytype", &config_default["proxytype"].as_i64().unwrap()),
+                ("proxyhost", &config_default["proxyhost"].as_str().unwrap()),
+                ("proxyport", &config_default["proxyport"].as_i64().unwrap()),
+                ("proxyonion", &config_default["proxyonion"].as_bool().unwrap()),
+                ("transport", &config_default["transport"].as_i64().unwrap()),
+                ("ipv6", &config_default["ipv6"].as_bool().unwrap()),
+                ("notifications", &config_default["notifications"].as_bool().unwrap()),
+                ("runinbackground", &config_default["runinbackground"].as_bool().unwrap()),
+                ("captchaid", &"".to_string()),
+                ("captchaloading", &false),
+                ("qrcodetext", &"".to_string()),
+            ]).expect("Failed to load app settings.");
+        }
 
         glib::Object::new(&[
             ("lastretrievaltime", &config["lastretrievaltime"].as_i64().unwrap()),
