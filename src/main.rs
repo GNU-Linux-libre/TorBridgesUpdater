@@ -1190,6 +1190,7 @@ fn main() {
             let retrieval_new = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
 
             app_settings.set_property("time", retrieval_new as i64);
+            app_settings.set_property("lastretrievaltime", retrieval_new as i64);
             app_settings.save();
             label_timer_last_retrieval.set_text(&(locale::get_translation().LAST_RETRIEVAL_TIME.to_string() + ": " + &chrono::Local.timestamp(retrieval_new as i64, 0).format("%Y-%m-%d %H:%M:%S").to_string().as_str()));
 
@@ -1326,8 +1327,9 @@ fn main() {
 
         channeltimer.1.attach(None, clone!(@weak app, @weak label_timer, @weak label_timer_until, @weak progressload, @weak mainwindow, @weak settingswindow, @weak captchawindow, @weak bridgeswindow, @weak qrcodewindow, @weak aboutwindow, @strong app_settings => @default-return glib::Continue(true), move |_| {
             let mut next_time: u64 = (app_settings.property::<i64>("time") + (app_settings.property::<i64>("days")*24*60*60) + (app_settings.property::<i64>("hours")*60*60) + (app_settings.property::<i64>("minutes")*60) + app_settings.property::<i64>("seconds")) as u64;
+            let next_time_since_retrieval: u64 = (app_settings.property::<i64>("lastretrievaltime") + (app_settings.property::<i64>("days")*24*60*60) + (app_settings.property::<i64>("hours")*60*60) + (app_settings.property::<i64>("minutes")*60) + app_settings.property::<i64>("seconds")) as u64;
             let now_time = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
-            if now_time >= (app_settings.property::<i64>("lastretrievaltime") as u64) {
+            if now_time > next_time_since_retrieval {
                 label_timer_until.set_markup(&("<b>".to_string() + locale::get_translation().MAIN_WINDOW_TIME_TO_RETRIEVE + "</b>"));
             }
             if now_time >= next_time {
