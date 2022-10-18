@@ -1,0 +1,8 @@
+#!/bin/bash
+if [ -d "$HOME/.local/share/TorBridgesUpdater" ]; then
+    rm -rf "$HOME/.local/share/TorBridgesUpdater";
+fi
+
+if [ -f "$HOME/.local/share/applications/com.yakovlevegor.TorBridgesUpdater.desktop" ]; then
+    rm -rf "$HOME/.local/share/applications/com.yakovlevegor.TorBridgesUpdater.desktop";
+fi

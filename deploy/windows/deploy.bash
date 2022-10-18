@@ -27,4 +27,5 @@ if [ -f "../../target/release/tor_bridges_updater" ]; then
     cp -r /mingw64/share/icons/hicolor "Tor Bridges Updater"/share/icons
 
     cp install_script "Tor Bridges Updater"/install.bat
+    cp uninstall_script "Tor Bridges Updater"/uninstall.bat
 fi

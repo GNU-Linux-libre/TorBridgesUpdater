@@ -14,4 +14,6 @@ if [ -f "../../target/release/tor_bridges_updater" ]; then
     cp ../../icons/logo.svg "Tor Bridges Updater"/icon.svg
     cp install_script "Tor Bridges Updater"/install.bash
     chmod +x "Tor Bridges Updater"/install.bash
+    cp uninstall_script "Tor Bridges Updater"/uninstall.bash
+    chmod +x "Tor Bridges Updater"/uninstall.bash
 fi
