@@ -1,0 +1,16 @@
+#!/bin/bash
+if [ ! -d "$HOME/.local/share/TorBridgesUpdater" ]; then
+    mkdir -p "$HOME/.local/share/TorBridgesUpdater";
+fi
+
+if [ ! -d "$HOME/.local/share/applications" ]; then
+    mkdir -p "$HOME/.local/share/applications";
+fi
+
+cat com.yakovlevegor.TorBridgesUpdater.desktop.template | sed -E "s/\\\$HOME/"$(echo $HOME | sed -E "s/\\//\\\\\\//g")"/g" > "$HOME/.local/share/applications/com.yakovlevegor.TorBridgesUpdater.desktop";
+chmod +x "$HOME/.local/share/applications/com.yakovlevegor.TorBridgesUpdater.desktop";
+
+cp icon.svg "$HOME/.local/share/TorBridgesUpdater/icon.svg"
+
+cp tor_bridges_updater "$HOME/.local/share/TorBridgesUpdater"
+chmod +x "$HOME/.local/share/TorBridgesUpdater/tor_bridges_updater"

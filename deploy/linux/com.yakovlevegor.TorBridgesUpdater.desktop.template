@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Tor Bridges Updater
+Icon=$HOME/.local/share/TorBridgesUpdater/icon.svg
+Comment=Update Tor bridges on a schedule
+Exec=$HOME/.local/share/TorBridgesUpdater/tor_bridges_updater
+Terminal=false
+StartupNotify=false
+Type=Application
+Categories=Utility
+X-GNOME-UsesNotifications=true

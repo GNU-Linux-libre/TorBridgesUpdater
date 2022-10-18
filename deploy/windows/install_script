@@ -1,0 +1,1 @@
+powershell "$s=(New-Object -COM WScript.Shell).CreateShortcut('%userprofile%\Start Menu\Programs\Tor Bridges Updater.lnk');$s.TargetPath='%CD%\Tor Bridges Updater.exe';$s.Save()"
