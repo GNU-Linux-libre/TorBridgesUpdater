@@ -2,7 +2,7 @@
 
 # Tor Bridges Updater
 
-## Update your Tor bridges on a schedule
+### Update your Tor bridges on a schedule
 
 ![Tor Bridges Updater Window](app_window.png "Tor Bridges Updater Window")
 
