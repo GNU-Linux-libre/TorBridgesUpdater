@@ -1700,7 +1700,7 @@ dependencies = [
 [[package]]
 name = "winres"
 version = "0.1.11"
-source = "git+https://github.com/Nilstrieb/winres?branch=linking-flags#c839134b5f78d7dd0f5c8211ec6c7b675b0026fc"
+source = "git+https://github.com/yakovlevegor/winres#c839134b5f78d7dd0f5c8211ec6c7b675b0026fc"
 dependencies = [
  "toml",
  "version_check",

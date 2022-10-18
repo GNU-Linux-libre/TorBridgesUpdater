@@ -24,5 +24,6 @@ base64 = "0.13.0"
 chrono = "0.4"
 sys-locale = "0.2.1"
 
+#My own fork of https://github.com/Nilstrieb/winres (safer)
 [target.'cfg(windows)'.build-dependencies]
-winres = { git = "https://github.com/Nilstrieb/winres", branch = "linking-flags" }
+winres = { git = "https://github.com/yakovlevegor/winres" }
