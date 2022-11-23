@@ -1433,7 +1433,7 @@ dependencies = [
  "reqwest",
  "sys-locale",
  "tokio",
- "winres",
+ "winresource",
 ]
 
 [[package]]
@@ -1698,9 +1698,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "winres"
-version = "0.1.11"
-source = "git+https://github.com/yakovlevegor/winres#c839134b5f78d7dd0f5c8211ec6c7b675b0026fc"
+name = "winresource"
+version = "0.1.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dfdc76f27713e47809d5b0d749553304280deb25d610d82ed410a1a336d56969"
 dependencies = [
  "toml",
  "version_check",

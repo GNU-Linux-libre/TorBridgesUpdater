@@ -26,11 +26,11 @@
 */
 
 #[cfg(windows)]
-extern crate winres;
+extern crate winresource;
 
 #[cfg(windows)]
 fn main() {
-    let mut res = winres::WindowsResource::new();
+    let mut res = winresource::WindowsResource::new();
     res.set_icon("icons/logo.ico");
     res.compile().unwrap();
 }

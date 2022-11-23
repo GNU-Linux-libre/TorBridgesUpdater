@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 build = "build.rs"
 
-[package.metadata.winres]
+[package.metadata.winresource]
 ProductName = "Tor Bridges Updater"
 FileDescription = "Update Tor bridges on a schedule" 
 ProductVersion = "0.1.0"
@@ -24,6 +24,5 @@ base64 = "0.13.0"
 chrono = "0.4"
 sys-locale = "0.2.1"
 
-#My own fork of https://github.com/Nilstrieb/winres (safer)
 [target.'cfg(windows)'.build-dependencies]
-winres = { git = "https://github.com/yakovlevegor/winres" }
+winresource = "0.1"
