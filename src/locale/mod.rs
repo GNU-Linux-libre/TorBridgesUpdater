@@ -53,6 +53,7 @@ pub struct Translation {
     pub LOADING_BRIDGES_NOTFOUND: &'static str,
     pub LOADING_ERROR: &'static str,
     pub LOADING_ERROR_WRONG_CAPTCHA: &'static str,
+    pub LOADING_ERROR_INTERNAL: &'static str,
     pub LOADING_ERROR_NO_BRIDGES: &'static str,
     pub BRIDGES_SAVE_QR: &'static str,
     pub UPDATE_BRIDGES_NOTIFICATION_TITLE: &'static str,

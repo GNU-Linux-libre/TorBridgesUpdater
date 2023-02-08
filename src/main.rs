@@ -1136,6 +1136,9 @@ fn main() {
                             2 => {
                                 captcha_message.push_str(locale::get_translation().LOADING_ERROR_NO_BRIDGES);
                             },
+                            3 => {
+                                captcha_message.push_str(locale::get_translation().LOADING_ERROR_INTERNAL);
+                            },
                             _ => ()
                         }
                         captcha_loading_error_message.show();
@@ -1583,8 +1586,12 @@ fn get_bridges(transport: i64, ipv6: bool, use_proxy: bool, proxy_protocol: i64,
                 return Err(2);
             }
 
-            if body.contains("There currently aren't any bridges available") {
+            if body.contains("BridgeDB encountered an internal error") {
                 return Err(3);
+            }
+
+            if body.contains("There currently aren't any bridges available") {
+                return Err(4);
             }
 
             let parsedlines = String::from(parsebridgelines.captures(&body).unwrap().get(1).unwrap().as_str()).replacen("        ", "", 1).replace("\n        ", "\n").replace("<br />", "\n");

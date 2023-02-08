@@ -22,6 +22,7 @@ pub const TRANSLATION: Translation = Translation {
     LOADING_BRIDGES_NOTFOUND: "Bridges are missing",
     LOADING_ERROR: "Can't load page!",
     LOADING_ERROR_WRONG_CAPTCHA: "Wrong captcha!",
+    LOADING_ERROR_INTERNAL: "An unexpected website error!",
     LOADING_ERROR_NO_BRIDGES: "No bridges are currently available",
     BRIDGES_SAVE_QR: "Save bridges QR code",
     UPDATE_BRIDGES_NOTIFICATION_TITLE: "Time to update bridges!",
