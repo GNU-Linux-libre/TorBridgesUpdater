@@ -40,7 +40,7 @@ use regex::Regex;
 
 use gtk4 as gtk;
 use gtk::prelude::*;
-use gtk::{TextBuffer, Application, builders::ApplicationWindowBuilder, ResponseType, builders::ImageBuilder, Image, builders::PictureBuilder, FileChooserAction, FileChooserDialog, ScrollablePolicy, Adjustment, builders::AboutDialogBuilder, ScrolledWindow, builders::TextViewBuilder, builders::ComboBoxTextBuilder, ComboBoxText, builders::SpinButtonBuilder, builders::EntryBuilder, builders::ButtonBuilder, Button, builders::GridBuilder, Label, builders::LabelBuilder, ProgressBar, builders::ProgressBarBuilder, Box, builders::BoxBuilder, builders::ToggleButtonBuilder, builders::CheckButtonBuilder, Orientation, Align};
+use gtk::{TextBuffer, Application, ApplicationWindow, ResponseType, Image, Picture, FileChooserAction, FileChooserDialog, ScrollablePolicy, Adjustment, AboutDialog, ScrolledWindow, TextView, ComboBoxText, SpinButton, Entry, Button, Grid, Label, ProgressBar, Box, ToggleButton, CheckButton, Orientation, Align};
 use gtk::{gdk::Texture, gdk_pixbuf::Pixbuf};
 use gtk::{gio, gio::{MemoryInputStream, Cancellable}};
 use gtk::{glib, glib::{Bytes, clone}};
@@ -61,6 +61,8 @@ const BRIDGES_URL_ONION: &str = "http://yq5jjvr7drkjrelzhut7kgclfuro65jjlivyzfmx
 
 type RequestResult = Result<(String, String), i64>;
 
+use base64::Engine as _;
+
 fn main() {
     let app = Application::builder()
         .application_id(APP_ID)
@@ -74,12 +76,12 @@ fn main() {
 /* Initialize windows start */
         let pict_buf = Pixbuf::from_read(APP_ICON).unwrap();
         let pict_texture = Texture::for_pixbuf(&pict_buf);
-        let icon_load = ImageBuilder::new().paintable(&pict_texture).pixel_size(64).valign(Align::Center).build();
-        let label_text: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().MAIN_WINDOW_GET_BRIDGES_BUTTON).build();
-        let label_timer: Label = LabelBuilder::new().valign(Align::End).use_markup(true).build();
-        let label_timer_until: Label = LabelBuilder::new().valign(Align::End).label(locale::get_translation().MAIN_WINDOW_UNTIL_RETRIEVAL).build();
-        let label_timer_last_retrieval: Label = LabelBuilder::new().valign(Align::End).label(&(locale::get_translation().LAST_RETRIEVAL_TIME.to_string() + ": <" + locale::get_translation().RETRIEVAL_TIME_UNKNOWN + ">")).margin_bottom(5).build();
-        let progressload: ProgressBar = ProgressBarBuilder::new().valign(Align::End).fraction(0.5).margin_bottom(3).build();
+        let icon_load = Image::builder().paintable(&pict_texture).pixel_size(64).valign(Align::Center).build();
+        let label_text: Label = Label::builder().valign(Align::Center).label(locale::get_translation().MAIN_WINDOW_GET_BRIDGES_BUTTON).build();
+        let label_timer: Label = Label::builder().valign(Align::End).use_markup(true).build();
+        let label_timer_until: Label = Label::builder().valign(Align::End).label(locale::get_translation().MAIN_WINDOW_UNTIL_RETRIEVAL).build();
+        let label_timer_last_retrieval: Label = Label::builder().valign(Align::End).label(&(locale::get_translation().LAST_RETRIEVAL_TIME.to_string() + ": <" + locale::get_translation().RETRIEVAL_TIME_UNKNOWN + ">")).margin_bottom(5).build();
+        let progressload: ProgressBar = ProgressBar::builder().valign(Align::End).fraction(0.5).margin_bottom(3).build();
 
         let timer_visible_update = clone!(@strong app_settings, @weak label_timer, @weak label_timer_until, @weak progressload => move || {
             label_timer.set_visible(app_settings.property::<bool>("notifications"));
@@ -91,35 +93,35 @@ fn main() {
 
         let lastretrtime = app_settings.property::<i64>("time");
         if lastretrtime != 0 {
-            label_timer_last_retrieval.set_text(&(locale::get_translation().LAST_RETRIEVAL_TIME.to_string() + ": " + &chrono::Local.timestamp(lastretrtime as i64, 0).format("%Y-%m-%d %H:%M:%S").to_string().as_str()));
+            label_timer_last_retrieval.set_text(&(locale::get_translation().LAST_RETRIEVAL_TIME.to_string() + ": " + &chrono::Local.timestamp_opt(lastretrtime as i64, 0).unwrap().format("%Y-%m-%d %H:%M:%S").to_string().as_str()));
         }
-        let icon_settings_button = ImageBuilder::new().valign(Align::Center).icon_name("emblem-system-symbolic").build();
-        let label_settings_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().MAIN_WINDOW_BUTTON_SETTINGS).margin_start(5).build();
-        let settings_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_settings_button = Image::builder().valign(Align::Center).icon_name("emblem-system-symbolic").build();
+        let label_settings_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().MAIN_WINDOW_BUTTON_SETTINGS).margin_start(5).build();
+        let settings_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         settings_button_display.append(&icon_settings_button);
         settings_button_display.append(&label_settings_button);
-        let settings_button: Button = ButtonBuilder::new().valign(Align::End).halign(Align::Start).vexpand(false).hexpand(false).build();
+        let settings_button: Button = Button::builder().valign(Align::End).halign(Align::Start).vexpand(false).hexpand(false).build();
         settings_button.set_child(Some(&settings_button_display));
-        let icon_about_button = ImageBuilder::new().valign(Align::Center).icon_name("help-about-symbolic").build();
-        let label_about_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().MAIN_WINDOW_BUTTON_ABOUT).margin_start(5).build();
-        let about_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_about_button = Image::builder().valign(Align::Center).icon_name("help-about-symbolic").build();
+        let label_about_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().MAIN_WINDOW_BUTTON_ABOUT).margin_start(5).build();
+        let about_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         about_button_display.append(&icon_about_button);
         about_button_display.append(&label_about_button);
-        let about_button: Button = ButtonBuilder::new().halign(Align::Start).build();
+        let about_button: Button = Button::builder().halign(Align::Start).build();
         about_button.set_child(Some(&about_button_display));
-        let icon_quit_button = ImageBuilder::new().valign(Align::Center).icon_name("application-exit-symbolic").build();
-        let label_quit_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().MAIN_WINDOW_BUTTON_QUIT).margin_start(5).build();
-        let quit_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_quit_button = Image::builder().valign(Align::Center).icon_name("application-exit-symbolic").build();
+        let label_quit_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().MAIN_WINDOW_BUTTON_QUIT).margin_start(5).build();
+        let quit_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         quit_button_display.append(&icon_quit_button);
         quit_button_display.append(&label_quit_button);
-        let quit_button: Button = ButtonBuilder::new().halign(Align::End).build();
+        let quit_button: Button = Button::builder().halign(Align::End).build();
         quit_button.set_child(Some(&quit_button_display));
-        let boxapp = BoxBuilder::new().orientation(Orientation::Vertical).homogeneous(false).vexpand(true).hexpand(true).margin_top(5).margin_bottom(5).margin_start(5).margin_end(5).build();
-        let boxtop = BoxBuilder::new().orientation(Orientation::Vertical).homogeneous(false).vexpand(true).build();
-        let boxbottom = BoxBuilder::new().orientation(Orientation::Horizontal).homogeneous(true).vexpand(true).hexpand(true).build();
-        let boxbottomright = BoxBuilder::new().orientation(Orientation::Horizontal).homogeneous(true).vexpand(false).hexpand(false).valign(Align::End).halign(Align::End).build();
-        let buttongetbridges = ButtonBuilder::new().valign(Align::Center).vexpand(true).margin_bottom(5).build();
-        let button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(true).vexpand(true).build();
+        let boxapp = Box::builder().orientation(Orientation::Vertical).homogeneous(false).vexpand(true).hexpand(true).margin_top(5).margin_bottom(5).margin_start(5).margin_end(5).build();
+        let boxtop = Box::builder().orientation(Orientation::Vertical).homogeneous(false).vexpand(true).build();
+        let boxbottom = Box::builder().orientation(Orientation::Horizontal).homogeneous(true).vexpand(true).hexpand(true).build();
+        let boxbottomright = Box::builder().orientation(Orientation::Horizontal).homogeneous(true).vexpand(false).hexpand(false).valign(Align::End).halign(Align::End).build();
+        let buttongetbridges = Button::builder().valign(Align::Center).vexpand(true).margin_bottom(5).build();
+        let button_display: Box = Box::builder().halign(Align::Center).hexpand(true).vexpand(true).build();
         button_display.append(&icon_load);
         button_display.append(&label_text);
         buttongetbridges.set_child(Some(&button_display));
@@ -136,7 +138,7 @@ fn main() {
         boxapp.append(&boxtop);
         boxapp.append(&boxbottom);
 
-        let mainwindow = ApplicationWindowBuilder::new()
+        let mainwindow = ApplicationWindow::builder()
             .application(app)
             .title(locale::get_translation().APP_TITLE)
             .default_width(320)
@@ -184,7 +186,7 @@ fn main() {
 
         app.set_accels_for_action("app.quit", &["<Primary>Q"]);
 
-        let settingswindow = ApplicationWindowBuilder::new()
+        let settingswindow = ApplicationWindow::builder()
             .application(app)
             .title(locale::get_translation().SETTINGS_WINDOW_TITLE)
             .default_width(400)
@@ -193,65 +195,65 @@ fn main() {
             .hide_on_close(true)
             .build();
  
-        let label_days: Label = LabelBuilder::new().halign(Align::End).margin_end(5).label("days").build();
-        let label_hours: Label = LabelBuilder::new().halign(Align::End).margin_end(5).label("hours").build();
-        let label_minutes: Label = LabelBuilder::new().halign(Align::End).margin_end(5).label("minutes").build();
-        let label_seconds: Label = LabelBuilder::new().halign(Align::End).margin_end(5).label("seconds").build();
+        let label_days: Label = Label::builder().halign(Align::End).margin_end(5).label("days").build();
+        let label_hours: Label = Label::builder().halign(Align::End).margin_end(5).label("hours").build();
+        let label_minutes: Label = Label::builder().halign(Align::End).margin_end(5).label("minutes").build();
+        let label_seconds: Label = Label::builder().halign(Align::End).margin_end(5).label("seconds").build();
 
-        let days_entry = SpinButtonBuilder::new().digits(0).adjustment(&Adjustment::new(0.0, 0.0, 364.0, 1.0, 1.0, 1.0)).build();
-        let hours_entry = SpinButtonBuilder::new().digits(0).adjustment(&Adjustment::new(0.0, 0.0, 23.0, 1.0, 1.0, 1.0)).build();
-        let minutes_entry = SpinButtonBuilder::new().digits(0).adjustment(&Adjustment::new(0.0, 0.0, 59.0, 1.0, 1.0, 1.0)).build();
-        let seconds_entry = SpinButtonBuilder::new().digits(0).adjustment(&Adjustment::new(0.0, 0.0, 59.0, 1.0, 1.0, 1.0)).build();
+        let days_entry = SpinButton::builder().digits(0).adjustment(&Adjustment::new(0.0, 0.0, 364.0, 1.0, 1.0, 1.0)).build();
+        let hours_entry = SpinButton::builder().digits(0).adjustment(&Adjustment::new(0.0, 0.0, 23.0, 1.0, 1.0, 1.0)).build();
+        let minutes_entry = SpinButton::builder().digits(0).adjustment(&Adjustment::new(0.0, 0.0, 59.0, 1.0, 1.0, 1.0)).build();
+        let seconds_entry = SpinButton::builder().digits(0).adjustment(&Adjustment::new(0.0, 0.0, 59.0, 1.0, 1.0, 1.0)).build();
 
-        let boxtimer = BoxBuilder::new().orientation(Orientation::Vertical).homogeneous(true).vexpand(false).hexpand(true).valign(Align::Center).margin_bottom(15).margin_top(5).build();
+        let boxtimer = Box::builder().orientation(Orientation::Vertical).homogeneous(true).vexpand(false).hexpand(true).valign(Align::Center).margin_bottom(15).margin_top(5).build();
 
-        let gridtimer = GridBuilder::new().vexpand(false).hexpand(true).row_homogeneous(true).column_homogeneous(true).row_spacing(10).valign(Align::Center).build();
+        let gridtimer = Grid::builder().vexpand(false).hexpand(true).row_homogeneous(true).column_homogeneous(true).row_spacing(10).valign(Align::Center).build();
 
-        let torrcfilechoose = BoxBuilder::new().orientation(Orientation::Horizontal).valign(Align::Center).homogeneous(false).hexpand(false).margin_bottom(5).build();
-        let torrcfileentry = EntryBuilder::new().editable(false).hexpand(true).build();
-        let icon_torrc_button = ImageBuilder::new().valign(Align::Center).icon_name("document-open-symbolic").build();
-        let label_torrc_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().OPEN_FILE).margin_start(5).build();
-        let torrc_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let torrcfilechoose = Box::builder().orientation(Orientation::Horizontal).valign(Align::Center).homogeneous(false).hexpand(false).margin_bottom(5).build();
+        let torrcfileentry = Entry::builder().editable(false).hexpand(true).build();
+        let icon_torrc_button = Image::builder().valign(Align::Center).icon_name("document-open-symbolic").build();
+        let label_torrc_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().OPEN_FILE).margin_start(5).build();
+        let torrc_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         torrc_button_display.append(&icon_torrc_button);
         torrc_button_display.append(&label_torrc_button);
-        let torrcbutton = ButtonBuilder::new().margin_start(5).build();
+        let torrcbutton = Button::builder().margin_start(5).build();
         torrcbutton.set_child(Some(&torrc_button_display));
         torrcfilechoose.append(&torrcfileentry);
         torrcfilechoose.append(&torrcbutton);
 
-        let bridgesfilechoose = BoxBuilder::new().orientation(Orientation::Horizontal).valign(Align::Center).homogeneous(false).build();
+        let bridgesfilechoose = Box::builder().orientation(Orientation::Horizontal).valign(Align::Center).homogeneous(false).build();
         bridgesfilechoose.set_margin_bottom(5);
-        let bridgesfileentry = EntryBuilder::new().editable(false).hexpand(true).build();
-        let icon_bridges_button = ImageBuilder::new().valign(Align::Center).icon_name("document-open-symbolic").build();
-        let label_bridges_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().OPEN_FILE).margin_start(5).build();
-        let bridges_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let bridgesfileentry = Entry::builder().editable(false).hexpand(true).build();
+        let icon_bridges_button = Image::builder().valign(Align::Center).icon_name("document-open-symbolic").build();
+        let label_bridges_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().OPEN_FILE).margin_start(5).build();
+        let bridges_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         bridges_button_display.append(&icon_bridges_button);
         bridges_button_display.append(&label_bridges_button);
-        let bridgesbutton = ButtonBuilder::new().margin_start(5).build();
+        let bridgesbutton = Button::builder().margin_start(5).build();
         bridgesbutton.set_child(Some(&bridges_button_display));
         bridgesfilechoose.append(&bridgesfileentry);
         bridgesfilechoose.append(&bridgesbutton);
 
-        let checkipv6 = CheckButtonBuilder::new().label(locale::get_translation().SETTINGS_WINDOW_IPV6).tooltip_text(locale::get_translation().SETTINGS_WINDOW_IPV6_TOOLTIP).halign(Align::Center).build();
-        let disableold = CheckButtonBuilder::new().label(locale::get_translation().SETTINGS_WINDOW_TORRC_DISABLE_OLD).tooltip_text(locale::get_translation().SETTINGS_WINDOW_TORRC_DISABLE_OLD_TOOLTIP).halign(Align::Center).build();
-        let keepold = CheckButtonBuilder::new().label(locale::get_translation().SETTINGS_WINDOW_BRIDGES_KEEP_OLD).tooltip_text(locale::get_translation().SETTINGS_WINDOW_BRIDGES_KEEP_OLD_TOOLTIP).halign(Align::Center).build();
+        let checkipv6 = CheckButton::builder().label(locale::get_translation().SETTINGS_WINDOW_IPV6).tooltip_text(locale::get_translation().SETTINGS_WINDOW_IPV6_TOOLTIP).halign(Align::Center).build();
+        let disableold = CheckButton::builder().label(locale::get_translation().SETTINGS_WINDOW_TORRC_DISABLE_OLD).tooltip_text(locale::get_translation().SETTINGS_WINDOW_TORRC_DISABLE_OLD_TOOLTIP).halign(Align::Center).build();
+        let keepold = CheckButton::builder().label(locale::get_translation().SETTINGS_WINDOW_BRIDGES_KEEP_OLD).tooltip_text(locale::get_translation().SETTINGS_WINDOW_BRIDGES_KEEP_OLD_TOOLTIP).halign(Align::Center).build();
 
-        let icon_shownotifications_check = ImageBuilder::new().vexpand(true).icon_name("alarm-symbolic").build();
-        let label_shownotifications_check: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().SETTINGS_WINDOW_NOTIFICATIONS_SHOW).margin_start(5).build();
-        let shownotifications_check_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_shownotifications_check = Image::builder().vexpand(true).icon_name("alarm-symbolic").build();
+        let label_shownotifications_check: Label = Label::builder().valign(Align::Center).label(locale::get_translation().SETTINGS_WINDOW_NOTIFICATIONS_SHOW).margin_start(5).build();
+        let shownotifications_check_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         shownotifications_check_display.append(&icon_shownotifications_check);
         shownotifications_check_display.append(&label_shownotifications_check);
 
-        let shownotifications = ToggleButtonBuilder::new().label(locale::get_translation().SETTINGS_WINDOW_NOTIFICATIONS_SHOW).halign(Align::Center).valign(Align::End).vexpand(true).margin_bottom(15).build();
+        let shownotifications = ToggleButton::builder().label(locale::get_translation().SETTINGS_WINDOW_NOTIFICATIONS_SHOW).halign(Align::Center).valign(Align::End).vexpand(true).margin_bottom(15).build();
         shownotifications.set_child(Some(&shownotifications_check_display));
 
-        let runinbackground = CheckButtonBuilder::new().label(locale::get_translation().SETTINGS_WINDOW_RUN_BACKGROUND).halign(Align::Center).valign(Align::Start).margin_top(5).build();
-        let updbrdgs = CheckButtonBuilder::new().label(locale::get_translation().SETTINGS_WINDOW_TORRC_MODIFY).halign(Align::Center).build();
-        let savbrdgs = CheckButtonBuilder::new().label(locale::get_translation().SETTINGS_WINDOW_BRIDGES_SAVE).halign(Align::Center).build();
-        let useproxy = CheckButtonBuilder::new().label(locale::get_translation().SETTINGS_WINDOW_PROXY).halign(Align::Center).build();
-        let getonion = CheckButtonBuilder::new().label(locale::get_translation().SETTINGS_WINDOW_CONNECT_ONION).tooltip_text(locale::get_translation().SETTINGS_WINDOW_CONNECT_ONION_TOOLTIP).halign(Align::Center).build();
+        let runinbackground = CheckButton::builder().label(locale::get_translation().SETTINGS_WINDOW_RUN_BACKGROUND).halign(Align::Center).valign(Align::Start).margin_top(5).build();
+        let updbrdgs = CheckButton::builder().label(locale::get_translation().SETTINGS_WINDOW_TORRC_MODIFY).halign(Align::Center).build();
+        let savbrdgs = CheckButton::builder().label(locale::get_translation().SETTINGS_WINDOW_BRIDGES_SAVE).halign(Align::Center).build();
+        let useproxy = CheckButton::builder().label(locale::get_translation().SETTINGS_WINDOW_PROXY).halign(Align::Center).build();
+        let getonion = CheckButton::builder().label(locale::get_translation().SETTINGS_WINDOW_CONNECT_ONION).tooltip_text(locale::get_translation().SETTINGS_WINDOW_CONNECT_ONION_TOOLTIP).halign(Align::Center).build();
 
-        let boxappsettings = BoxBuilder::new().orientation(Orientation::Vertical).homogeneous(false).margin_top(5).margin_bottom(5).margin_start(5).margin_end(5).build();
+        let boxappsettings = Box::builder().orientation(Orientation::Vertical).homogeneous(false).margin_top(5).margin_bottom(5).margin_start(5).margin_end(5).build();
 
         gridtimer.attach(&Box::new(Orientation::Horizontal, 0), 0, 0, 1, 1);
         gridtimer.attach(&label_days, 1, 0, 4, 1);
@@ -266,30 +268,30 @@ fn main() {
         gridtimer.attach(&seconds_entry, 17, 1, 8, 1);
         gridtimer.attach(&Box::new(Orientation::Horizontal, 0), 25, 1, 1, 1);
 
-        let boxgridsettings = BoxBuilder::new().orientation(Orientation::Vertical).homogeneous(false).vexpand(true).valign(Align::Center).build();
+        let boxgridsettings = Box::builder().orientation(Orientation::Vertical).homogeneous(false).vexpand(true).valign(Align::Center).build();
 
-        let gridsettings = GridBuilder::new().vexpand(false).hexpand(true).row_homogeneous(true).column_homogeneous(true).row_spacing(5).valign(Align::Center).build();
+        let gridsettings = Grid::builder().vexpand(false).hexpand(true).row_homogeneous(true).column_homogeneous(true).row_spacing(5).valign(Align::Center).build();
 
-        let boxtorrc = BoxBuilder::new().orientation(Orientation::Vertical).valign(Align::Center).vexpand(false).homogeneous(false).build();
+        let boxtorrc = Box::builder().orientation(Orientation::Vertical).valign(Align::Center).vexpand(false).homogeneous(false).build();
 
-        let boxbridgetype = BoxBuilder::new().orientation(Orientation::Vertical).valign(Align::Center).vexpand(false).homogeneous(false).build();
+        let boxbridgetype = Box::builder().orientation(Orientation::Vertical).valign(Align::Center).vexpand(false).homogeneous(false).build();
 
-        let boxproxy = BoxBuilder::new().orientation(Orientation::Horizontal).hexpand(true).homogeneous(false).margin_bottom(5).build();
+        let boxproxy = Box::builder().orientation(Orientation::Horizontal).hexpand(true).homogeneous(false).margin_bottom(5).build();
 
-        let boxproxyvert = BoxBuilder::new().orientation(Orientation::Vertical).valign(Align::Center).vexpand(false).hexpand(true).homogeneous(false).build();
+        let boxproxyvert = Box::builder().orientation(Orientation::Vertical).valign(Align::Center).vexpand(false).hexpand(true).homogeneous(false).build();
 
-        let boxsavefile = BoxBuilder::new().orientation(Orientation::Vertical).valign(Align::Center).homogeneous(false).build();
+        let boxsavefile = Box::builder().orientation(Orientation::Vertical).valign(Align::Center).homogeneous(false).build();
 
-        let label_bridgetype: Label = LabelBuilder::new().halign(Align::Center).label(locale::get_translation().SETTINGS_WINDOW_BRIDGES_TRANSPORT).build();
+        let label_bridgetype: Label = Label::builder().halign(Align::Center).label(locale::get_translation().SETTINGS_WINDOW_BRIDGES_TRANSPORT).build();
 
-        let proxytype_button = ComboBoxTextBuilder::new().build();
+        let proxytype_button = ComboBoxText::builder().build();
         proxytype_button.append_text("http");
         proxytype_button.append_text("socks5");
         proxytype_button.set_active(Some(0));
         
-        let proxy_host = EntryBuilder::new().width_chars(10).text("127.0.0.1").hexpand(true).margin_start(5).build();
+        let proxy_host = Entry::builder().width_chars(10).text("127.0.0.1").hexpand(true).margin_start(5).build();
 
-        let proxy_port = SpinButtonBuilder::new().digits(0).adjustment(&Adjustment::new(0.0, 0.0, 65536.0, 1.0, 1.0, 1.0)).margin_start(5).build();
+        let proxy_port = SpinButton::builder().digits(0).adjustment(&Adjustment::new(0.0, 0.0, 65536.0, 1.0, 1.0, 1.0)).margin_start(5).build();
 
         boxproxy.append(&proxytype_button);
         boxproxy.append(&proxy_host);
@@ -322,29 +324,29 @@ fn main() {
         gridsettings.attach(&label_bridgetype, 0, 3, 1, 1);
         gridsettings.attach(&boxbridgetype, 1, 3, 1, 1);
 
-        let settings_window_buttons_box = BoxBuilder::new().orientation(Orientation::Horizontal).homogeneous(true).halign(Align::End).valign(Align::End).margin_top(5).build();
-        let icon_settings_apply_button = ImageBuilder::new().valign(Align::Center).icon_name("emblem-ok-symbolic").build();
-        let label_settings_apply_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().FORM_APPLY).margin_start(5).build();
-        let settings_apply_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let settings_window_buttons_box = Box::builder().orientation(Orientation::Horizontal).homogeneous(true).halign(Align::End).valign(Align::End).margin_top(5).build();
+        let icon_settings_apply_button = Image::builder().valign(Align::Center).icon_name("emblem-ok-symbolic").build();
+        let label_settings_apply_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().FORM_APPLY).margin_start(5).build();
+        let settings_apply_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         settings_apply_button_display.append(&icon_settings_apply_button);
         settings_apply_button_display.append(&label_settings_apply_button);
-        let settings_apply = ButtonBuilder::new().label(locale::get_translation().FORM_APPLY).hexpand(false).margin_start(5).build();
+        let settings_apply = Button::builder().label(locale::get_translation().FORM_APPLY).hexpand(false).margin_start(5).build();
         settings_apply.set_child(Some(&settings_apply_button_display));
 
-        let icon_settings_submit_button = ImageBuilder::new().valign(Align::Center).icon_name("emblem-ok-symbolic").build();
-        let label_settings_submit_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().FORM_OK).margin_start(5).build();
-        let settings_submit_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_settings_submit_button = Image::builder().valign(Align::Center).icon_name("emblem-ok-symbolic").build();
+        let label_settings_submit_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().FORM_OK).margin_start(5).build();
+        let settings_submit_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         settings_submit_button_display.append(&icon_settings_submit_button);
         settings_submit_button_display.append(&label_settings_submit_button);
-        let settings_submit = ButtonBuilder::new().label(locale::get_translation().FORM_OK).hexpand(false).margin_start(5).build();
+        let settings_submit = Button::builder().label(locale::get_translation().FORM_OK).hexpand(false).margin_start(5).build();
         settings_submit.set_child(Some(&settings_submit_button_display));
 
-        let icon_settings_cancel_button = ImageBuilder::new().valign(Align::Center).icon_name("window-close-symbolic").build();
-        let label_settings_cancel_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().FORM_CANCEL).margin_start(5).build();
-        let settings_cancel_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_settings_cancel_button = Image::builder().valign(Align::Center).icon_name("window-close-symbolic").build();
+        let label_settings_cancel_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().FORM_CANCEL).margin_start(5).build();
+        let settings_cancel_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         settings_cancel_button_display.append(&icon_settings_cancel_button);
         settings_cancel_button_display.append(&label_settings_cancel_button);
-        let settings_cancel = ButtonBuilder::new().label(locale::get_translation().FORM_OK).hexpand(false).margin_start(5).build();
+        let settings_cancel = Button::builder().label(locale::get_translation().FORM_OK).hexpand(false).margin_start(5).build();
         settings_cancel.set_child(Some(&settings_cancel_button_display));
 
         settings_window_buttons_box.append(&settings_submit);
@@ -364,7 +366,7 @@ fn main() {
         boxappsettings.show();
         settingswindow.set_child(Some(&boxappsettings));
 
-        let captchawindow = ApplicationWindowBuilder::new()
+        let captchawindow = ApplicationWindow::builder()
             .application(app)
             .title(locale::get_translation().CAPTCHA_WINDOW_TITLE)
             .default_width(400)
@@ -373,45 +375,45 @@ fn main() {
             .hide_on_close(true)
             .build();
  
-        let boxcaptcha = BoxBuilder::new().orientation(Orientation::Vertical).homogeneous(false).vexpand(true).hexpand(true).margin_top(5).margin_bottom(5).margin_start(5).margin_end(5).build();
+        let boxcaptcha = Box::builder().orientation(Orientation::Vertical).homogeneous(false).vexpand(true).hexpand(true).margin_top(5).margin_bottom(5).margin_start(5).margin_end(5).build();
 
-        let boxcaptchaimage = BoxBuilder::new().orientation(Orientation::Vertical).homogeneous(true).vexpand(true).hexpand(true).width_request(400).height_request(125).build();
+        let boxcaptchaimage = Box::builder().orientation(Orientation::Vertical).homogeneous(true).vexpand(true).hexpand(true).width_request(400).height_request(125).build();
 
-        let boxcaptchainput = BoxBuilder::new().orientation(Orientation::Horizontal).homogeneous(false).build();
+        let boxcaptchainput = Box::builder().orientation(Orientation::Horizontal).homogeneous(false).build();
 
-        let boxcaptchainputvert = BoxBuilder::new().orientation(Orientation::Vertical).homogeneous(false).vexpand(false).valign(Align::End).build();
+        let boxcaptchainputvert = Box::builder().orientation(Orientation::Vertical).homogeneous(false).vexpand(false).valign(Align::End).build();
 
-        let captcha_load = PictureBuilder::new().can_shrink(true).vexpand(true).hexpand(false).build();
+        let captcha_load = Picture::builder().can_shrink(true).vexpand(true).hexpand(false).build();
 
         let captcha_loading_message = gtk::Label::new(Some(locale::get_translation().CAPTCHA_WINDOW_LOADING_CAPTCHA));
 
-        let captcha_loading_error_message: Label = LabelBuilder::new().label(locale::get_translation().LOADING_BRIDGES_ERROR).valign(Align::End).build();
+        let captcha_loading_error_message: Label = Label::builder().label(locale::get_translation().LOADING_BRIDGES_ERROR).valign(Align::End).build();
 
-        let captcha_input = EntryBuilder::new().hexpand(true).margin_top(5).build();
-        let captcha_window_buttons_box = BoxBuilder::new().orientation(Orientation::Horizontal).homogeneous(true).halign(Align::End).margin_top(5).build();
+        let captcha_input = Entry::builder().hexpand(true).margin_top(5).build();
+        let captcha_window_buttons_box = Box::builder().orientation(Orientation::Horizontal).homogeneous(true).halign(Align::End).margin_top(5).build();
 
-        let icon_captcha_retry_button = ImageBuilder::new().valign(Align::Center).icon_name("view-refresh-symbolic").build();
-        let label_captcha_retry_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().FORM_RETRY).margin_start(5).build();
-        let captcha_retry_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_captcha_retry_button = Image::builder().valign(Align::Center).icon_name("view-refresh-symbolic").build();
+        let label_captcha_retry_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().FORM_RETRY).margin_start(5).build();
+        let captcha_retry_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         captcha_retry_button_display.append(&icon_captcha_retry_button);
         captcha_retry_button_display.append(&label_captcha_retry_button);
-        let captcha_retry = ButtonBuilder::new().label(locale::get_translation().FORM_RETRY).hexpand(false).margin_start(5).build();
+        let captcha_retry = Button::builder().label(locale::get_translation().FORM_RETRY).hexpand(false).margin_start(5).build();
         captcha_retry.set_child(Some(&captcha_retry_button_display));
 
-        let icon_captcha_submit_button = ImageBuilder::new().valign(Align::Center).icon_name("emblem-ok-symbolic").build();
-        let label_captcha_submit_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().FORM_OK).margin_start(5).build();
-        let captcha_submit_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_captcha_submit_button = Image::builder().valign(Align::Center).icon_name("emblem-ok-symbolic").build();
+        let label_captcha_submit_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().FORM_OK).margin_start(5).build();
+        let captcha_submit_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         captcha_submit_button_display.append(&icon_captcha_submit_button);
         captcha_submit_button_display.append(&label_captcha_submit_button);
-        let captcha_submit = ButtonBuilder::new().label(locale::get_translation().FORM_OK).hexpand(false).margin_start(5).build();
+        let captcha_submit = Button::builder().label(locale::get_translation().FORM_OK).hexpand(false).margin_start(5).build();
         captcha_submit.set_child(Some(&captcha_submit_button_display));
 
-        let icon_captcha_cancel_button = ImageBuilder::new().valign(Align::Center).icon_name("window-close-symbolic").build();
-        let label_captcha_cancel_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().FORM_CANCEL).margin_start(5).build();
-        let captcha_cancel_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_captcha_cancel_button = Image::builder().valign(Align::Center).icon_name("window-close-symbolic").build();
+        let label_captcha_cancel_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().FORM_CANCEL).margin_start(5).build();
+        let captcha_cancel_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         captcha_cancel_button_display.append(&icon_captcha_cancel_button);
         captcha_cancel_button_display.append(&label_captcha_cancel_button);
-        let captcha_cancel = ButtonBuilder::new().label(locale::get_translation().FORM_CANCEL).hexpand(false).margin_start(5).build();
+        let captcha_cancel = Button::builder().label(locale::get_translation().FORM_CANCEL).hexpand(false).margin_start(5).build();
         captcha_cancel.set_child(Some(&captcha_cancel_button_display));
 
         boxcaptchainput.append(&captcha_input);
@@ -433,7 +435,7 @@ fn main() {
         captchawindow.set_child(Some(&boxcaptcha));
         captcha_load.hide();
 
-        let bridgeswindow = ApplicationWindowBuilder::new()
+        let bridgeswindow = ApplicationWindow::builder()
             .application(app)
             .title(locale::get_translation().BRIDGES_WINDOW_TITLE)
             .default_width(400)
@@ -442,32 +444,32 @@ fn main() {
             .hide_on_close(true)
             .build();
 
-        let boxbridges = BoxBuilder::new().orientation(Orientation::Vertical).homogeneous(false).margin_top(5).margin_bottom(5).margin_start(5).margin_end(5).build();
+        let boxbridges = Box::builder().orientation(Orientation::Vertical).homogeneous(false).margin_top(5).margin_bottom(5).margin_start(5).margin_end(5).build();
 
-        let boxbridgesbuttons = BoxBuilder::new().orientation(Orientation::Horizontal).homogeneous(false).halign(Align::Center).build();
+        let boxbridgesbuttons = Box::builder().orientation(Orientation::Horizontal).homogeneous(false).halign(Align::Center).build();
 
         let bridges_output_window = ScrolledWindow::new();
 
         let bridges_output_text_buffer = TextBuffer::new(None);
 
-        let bridges_output_text = TextViewBuilder::new().buffer(&bridges_output_text_buffer).editable(false).vexpand(true).hexpand(true).vscroll_policy(ScrollablePolicy::Natural).hscroll_policy(ScrollablePolicy::Natural).build();
+        let bridges_output_text = TextView::builder().buffer(&bridges_output_text_buffer).editable(false).vexpand(true).hexpand(true).vscroll_policy(ScrollablePolicy::Natural).hscroll_policy(ScrollablePolicy::Natural).build();
 
-        let icon_copy_clipboard_button = ImageBuilder::new().valign(Align::Center).icon_name("edit-copy-symbolic").build();
-        let label_copy_clipboard_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().BRIDGES_WINDOW_CLIPBOARD_COPY).margin_start(5).build();
-        let copy_clipboard_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_copy_clipboard_button = Image::builder().valign(Align::Center).icon_name("edit-copy-symbolic").build();
+        let label_copy_clipboard_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().BRIDGES_WINDOW_CLIPBOARD_COPY).margin_start(5).build();
+        let copy_clipboard_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         copy_clipboard_button_display.append(&icon_copy_clipboard_button);
         copy_clipboard_button_display.append(&label_copy_clipboard_button);
-        let button_copy_clipboard: Button = ButtonBuilder::new().hexpand(false).margin_end(5).halign(Align::Center).build();
+        let button_copy_clipboard: Button = Button::builder().hexpand(false).margin_end(5).halign(Align::Center).build();
         button_copy_clipboard.set_child(Some(&copy_clipboard_button_display));
 
-        let label_clipboard_copied: Label = LabelBuilder::new().halign(Align::Center).label(locale::get_translation().BRIDGES_WINDOW_CLIPBOARD_COPIED).build();
+        let label_clipboard_copied: Label = Label::builder().halign(Align::Center).label(locale::get_translation().BRIDGES_WINDOW_CLIPBOARD_COPIED).build();
 
-        let icon_show_qrcode_button = ImageBuilder::new().valign(Align::Center).icon_name("emblem-photos-symbolic").build();
-        let label_show_qrcode_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().BRIDGES_WINDOW_SHOW_QR_CODE).margin_start(5).build();
-        let show_qrcode_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_show_qrcode_button = Image::builder().valign(Align::Center).icon_name("emblem-photos-symbolic").build();
+        let label_show_qrcode_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().BRIDGES_WINDOW_SHOW_QR_CODE).margin_start(5).build();
+        let show_qrcode_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         show_qrcode_button_display.append(&icon_show_qrcode_button);
         show_qrcode_button_display.append(&label_show_qrcode_button);
-        let button_show_qrcode: Button = ButtonBuilder::new().hexpand(false).margin_start(5).halign(Align::Center).build();
+        let button_show_qrcode: Button = Button::builder().hexpand(false).margin_start(5).halign(Align::Center).build();
         button_show_qrcode.set_child(Some(&show_qrcode_button_display));
 
         bridges_output_window.set_child(Some(&bridges_output_text));
@@ -485,7 +487,7 @@ fn main() {
 
         bridgeswindow.set_child(Some(&boxbridges));
 
-        let qrcodewindow = ApplicationWindowBuilder::new()
+        let qrcodewindow = ApplicationWindow::builder()
             .application(app)
             .title(locale::get_translation().QRCODE_WINDOW_TITLE)
             .default_width(400)
@@ -494,16 +496,16 @@ fn main() {
             .hide_on_close(true)
             .build();
  
-        let boxqrcode = BoxBuilder::new().orientation(Orientation::Vertical).homogeneous(false).margin_top(5).margin_bottom(5).margin_start(5).margin_end(5).build();
+        let boxqrcode = Box::builder().orientation(Orientation::Vertical).homogeneous(false).margin_top(5).margin_bottom(5).margin_start(5).margin_end(5).build();
 
-        let qr_load = PictureBuilder::new().can_shrink(false).vexpand(true).hexpand(true).build();
+        let qr_load = Picture::builder().can_shrink(false).vexpand(true).hexpand(true).build();
 
-        let icon_qr_save_button = ImageBuilder::new().valign(Align::Center).icon_name("document-save-symbolic").build();
-        let label_qr_save_button: Label = LabelBuilder::new().valign(Align::Center).label(locale::get_translation().QRCODE_WINDOW_SAVE_AS_IMAGE).margin_start(5).build();
-        let qr_save_button_display: Box = BoxBuilder::new().halign(Align::Center).hexpand(false).vexpand(false).build();
+        let icon_qr_save_button = Image::builder().valign(Align::Center).icon_name("document-save-symbolic").build();
+        let label_qr_save_button: Label = Label::builder().valign(Align::Center).label(locale::get_translation().QRCODE_WINDOW_SAVE_AS_IMAGE).margin_start(5).build();
+        let qr_save_button_display: Box = Box::builder().halign(Align::Center).hexpand(false).vexpand(false).build();
         qr_save_button_display.append(&icon_qr_save_button);
         qr_save_button_display.append(&label_qr_save_button);
-        let qr_save_button = ButtonBuilder::new().hexpand(false).halign(Align::Center).build();
+        let qr_save_button = Button::builder().hexpand(false).halign(Align::Center).build();
         qr_save_button.set_child(Some(&qr_save_button_display));
 
         boxqrcode.append(&qr_load);
@@ -520,7 +522,7 @@ fn main() {
 
         let dialog_logo = Image::from_pixbuf(Some(&about_icon));
 
-        let aboutwindow = AboutDialogBuilder::new().title(locale::get_translation().ABOUT_WINDOW_TITLE).logo(&dialog_logo.paintable().unwrap()).program_name(locale::get_translation().APP_TITLE).comments(locale::get_translation().ABOUT_WINDOW_DESCRIPTION).authors(vec![String::from(ABOUT_AUTHOR)]).website(&("https://".to_string() + ABOUT_WEBSITE)).website_label(ABOUT_WEBSITE).version(APP_VERSION).copyright(&String::from_utf8(TOR_NOTICE.to_vec()).unwrap()).license(&String::from_utf8(LICENSE.to_vec()).unwrap()).modal(true).hide_on_close(true).build();
+        let aboutwindow = AboutDialog::builder().title(locale::get_translation().ABOUT_WINDOW_TITLE).logo(&dialog_logo.paintable().unwrap()).program_name(locale::get_translation().APP_TITLE).comments(locale::get_translation().ABOUT_WINDOW_DESCRIPTION).authors(vec![String::from(ABOUT_AUTHOR)]).website(&("https://".to_string() + ABOUT_WEBSITE)).website_label(ABOUT_WEBSITE).version(APP_VERSION).copyright(&String::from_utf8(TOR_NOTICE.to_vec()).unwrap()).license(&String::from_utf8(LICENSE.to_vec()).unwrap()).modal(true).hide_on_close(true).build();
 /* Initialize windows end */
 
         about_button.connect_clicked(clone!(@weak aboutwindow => move |_| {
@@ -869,7 +871,7 @@ fn main() {
                 match captcha_result {
                     Ok(captcha) =>  {
 
-                        let outbuf = base64::decode(captcha.0.clone()).unwrap();
+                        let outbuf = base64::engine::general_purpose::STANDARD.decode(captcha.0.clone()).unwrap();
                 
                         let input_bytes = Bytes::from(&outbuf);
                 
@@ -978,7 +980,7 @@ fn main() {
                                     bridgestypeload = "obfs4".to_string();
                                 }
                                 
-                                let bridgestimestamp = chrono::Local.timestamp(app_settings.property::<i64>("time"), 0).format("%Y-%m-%d %H:%M:%S").to_string();
+                                let bridgestimestamp = chrono::Local.timestamp_opt(app_settings.property::<i64>("time"), 0).unwrap().format("%Y-%m-%d %H:%M:%S").to_string();
 
                                 let bridges_contents = "#Retrieved on ".to_string() + &bridgestimestamp + ". Bridges type - " + &bridgestypeload + "\n\n" + &brdg_entries.join("\n\n") + "\n\n\n";
     
@@ -1195,7 +1197,7 @@ fn main() {
             app_settings.set_property("time", retrieval_new as i64);
             app_settings.set_property("lastretrievaltime", retrieval_new as i64);
             app_settings.save();
-            label_timer_last_retrieval.set_text(&(locale::get_translation().LAST_RETRIEVAL_TIME.to_string() + ": " + &chrono::Local.timestamp(retrieval_new as i64, 0).format("%Y-%m-%d %H:%M:%S").to_string().as_str()));
+            label_timer_last_retrieval.set_text(&(locale::get_translation().LAST_RETRIEVAL_TIME.to_string() + ": " + &chrono::Local.timestamp_opt(retrieval_new as i64, 0).unwrap().format("%Y-%m-%d %H:%M:%S").to_string().as_str()));
 
             label_timer_until.set_label(locale::get_translation().MAIN_WINDOW_UNTIL_RETRIEVAL);
 
@@ -1231,7 +1233,7 @@ fn main() {
         button_show_qrcode.connect_clicked(clone!(@strong app_settings, @weak qr_load, @weak qrcodewindow => move |_| {
             let qr_text = app_settings.property::<String>("qrcodetext");
 
-            let outbuf = base64::decode(qr_text.clone()).unwrap();
+            let outbuf = base64::engine::general_purpose::STANDARD.decode(qr_text.clone()).unwrap();
     
             let input_bytes = Bytes::from(&outbuf);
     
@@ -1256,7 +1258,7 @@ fn main() {
             let dialog_open = FileChooserDialog::new(Some(locale::get_translation().BRIDGES_FILE_SELECT), Some(&qrcodewindow), FileChooserAction::Save, &[(locale::get_translation().FORM_CANCEL, ResponseType::Cancel), (locale::get_translation().SAVE_FILE, ResponseType::Ok)]);
             dialog_open.set_modal(true);
             let now_time = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
-            dialog_open.set_current_name(&("bridges_qrcode_".to_string() + &chrono::Local.timestamp(now_time as i64, 0).format("%Y-%m-%d_%H_%M_%S").to_string().as_str() + ".jpg"));
+            dialog_open.set_current_name(&("bridges_qrcode_".to_string() + &chrono::Local.timestamp_opt(now_time as i64, 0).unwrap().format("%Y-%m-%d_%H_%M_%S").to_string().as_str() + ".jpg"));
 
             let mut dirpath = "".to_string();
 
@@ -1277,7 +1279,7 @@ fn main() {
         
                                             let qr_text = app_settings.property::<String>("qrcodetext");
         
-                                            let outbufqr = base64::decode(qr_text.clone()).unwrap();
+                                            let outbufqr = base64::engine::general_purpose::STANDARD.decode(qr_text.clone()).unwrap();
                         
                                             imageqr.write_all(outbufqr.as_slice()).unwrap();
                         
@@ -1410,7 +1412,7 @@ fn main() {
                 let last_retrieve: u64 = app_settings.property::<i64>("lastretrievaltime") as u64;
     
                 if last_retrieve > 0 {
-                    label_timer_last_retrieval.set_text(&(locale::get_translation().LAST_RETRIEVAL_TIME.to_string() + ": " + &chrono::Local.timestamp(last_retrieve as i64, 0).format("%Y-%m-%d %H:%M:%S").to_string().as_str()));
+                    label_timer_last_retrieval.set_text(&(locale::get_translation().LAST_RETRIEVAL_TIME.to_string() + ": " + &chrono::Local.timestamp_opt(last_retrieve as i64, 0).unwrap().format("%Y-%m-%d %H:%M:%S").to_string().as_str()));
                 }
     
                 progressload.set_fraction(until_next as f64/full_progress as f64);

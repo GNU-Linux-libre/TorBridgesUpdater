@@ -72,192 +72,126 @@ impl ObjectImpl for AppSettings {
         use once_cell::sync::Lazy;
         static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
             vec![
-                glib::ParamSpecInt64::new(
-                    "lastretrievaltime",
-                    "LastRetrievalTime",
-                    "LastRetrievalTime",
-                    i64::MIN,
-                    i64::MAX,
-                    0,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecInt64::new(
-                    "time",
-                    "Time",
-                    "Time",
-                    i64::MIN,
-                    i64::MAX,
-                    0,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecInt64::new(
-                    "days",
-                    "Days",
-                    "Days",
-                    i64::MIN,
-                    i64::MAX,
-                    0,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecInt64::new(
-                    "hours",
-                    "Hours",
-                    "Hours",
-                    i64::MIN,
-                    i64::MAX,
-                    0,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecInt64::new(
-                    "minutes",
-                    "Minutes",
-                    "Minutes",
-                    i64::MIN,
-                    i64::MAX,
-                    0,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecInt64::new(
-                    "seconds",
-                    "Seconds",
-                    "Seconds",
-                    i64::MIN,
-                    i64::MAX,
-                    0,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecBoolean::new(
-                    "savetorrc",
-                    "SaveTorrc",
-                    "SaveTorrc",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecString::new(
-                    "savetorrcpath",
-                    "SaveTorrcPath",
-                    "SaveTorrcPath",
-                    Some(""),
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecBoolean::new(
-                    "savebridges",
-                    "SaveBridges",
-                    "SaveBridges",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecString::new(
-                    "savebridgespath",
-                    "SaveBridgesPath",
-                    "SaveBridgesPath",
-                    Some(""),
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecBoolean::new(
-                    "torrcdisableold",
-                    "TorrcDisableOld",
-                    "TorrcDisableOld",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecBoolean::new(
-                    "keepold",
-                    "KeepOld",
-                    "KeepOld",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecBoolean::new(
-                    "useproxy",
-                    "UseProxy",
-                    "UseProxy",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecInt64::new(
-                    "proxytype",
-                    "ProxyType",
-                    "ProxyType",
-                    i64::MIN,
-                    i64::MAX,
-                    0,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecString::new(
-                    "proxyhost",
-                    "ProxyHost",
-                    "ProxyHost",
-                    Some(""),
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecInt64::new(
-                    "proxyport",
-                    "ProxyPort",
-                    "ProxyPort",
-                    i64::MIN,
-                    i64::MAX,
-                    0,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecBoolean::new(
-                    "proxyonion",
-                    "ProxyOnion",
-                    "ProxyOnion",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecInt64::new(
-                    "transport",
-                    "Transport",
-                    "Transport",
-                    i64::MIN,
-                    i64::MAX,
-                    0,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecBoolean::new(
-                    "ipv6",
-                    "IPv6",
-                    "IPv6",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecBoolean::new(
-                    "notifications",
-                    "Notifications",
-                    "Notifications",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecBoolean::new(
-                    "runinbackground",
-                    "RunInBackground",
-                    "RunInBackground",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecString::new(
-                    "captchaid",
-                    "CaptchaID",
-                    "CaptchaID",
-                    Some(""),
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecBoolean::new(
-                    "captchaloading",
-                    "CaptchaLoading",
-                    "CaptchaLoading",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                glib::ParamSpecString::new(
-                    "qrcodetext",
-                    "QRCodeText",
-                    "QRCodeText",
-                    Some(""),
-                    glib::ParamFlags::READWRITE,
-                ),
+                glib::ParamSpecInt64::builder("lastretrievaltime")
+                    .nick("LastRetrievalTime")
+                    .blurb("LastRetrievalTime")
+                    .build(),
+
+                glib::ParamSpecInt64::builder("time")
+                    .nick("Time")
+                    .blurb("Time")
+                    .build(),
+
+                glib::ParamSpecInt64::builder("days")
+                    .nick("Days")
+                    .blurb("Days")
+                    .build(),
+
+                glib::ParamSpecInt64::builder("hours")
+                    .nick("Hours")
+                    .blurb("Hours")
+                    .build(),
+
+                glib::ParamSpecInt64::builder("minutes")
+                    .nick("Minutes")
+                    .blurb("Minutes")
+                    .build(),
+
+                glib::ParamSpecInt64::builder("seconds")
+                    .nick("Seconds")
+                    .blurb("Seconds")
+                    .build(),
+
+                glib::ParamSpecBoolean::builder("savetorrc")
+                    .nick("SaveTorrc")
+                    .blurb("SaveTorrc")
+                    .build(),
+
+                glib::ParamSpecString::builder("savetorrcpath")
+                    .nick("SaveTorrcPath")
+                    .blurb("SaveTorrcPath")
+                    .build(),
+
+                glib::ParamSpecBoolean::builder("savebridges")
+                    .nick("SaveBridges")
+                    .blurb("SaveBridges")
+                    .build(),
+
+                glib::ParamSpecString::builder("savebridgespath")
+                    .nick("SaveBridgesPath")
+                    .blurb("SaveBridgesPath")
+                    .build(),
+
+                glib::ParamSpecBoolean::builder("torrcdisableold")
+                    .nick("TorrcDisableOld")
+                    .blurb("TorrcDisableOld")
+                    .build(),
+
+                glib::ParamSpecBoolean::builder("keepold")
+                    .nick("KeepOld")
+                    .blurb("KeepOld")
+                    .build(),
+
+                glib::ParamSpecBoolean::builder("useproxy")
+                    .nick("UseProxy")
+                    .blurb("UseProxy")
+                    .build(),
+
+                glib::ParamSpecInt64::builder("proxytype")
+                    .nick("ProxyType")
+                    .blurb("ProxyType")
+                    .build(),
+
+                glib::ParamSpecString::builder("proxyhost")
+                    .nick("ProxyHost")
+                    .blurb("ProxyHost")
+                    .build(),
+
+                glib::ParamSpecInt64::builder("proxyport")
+                    .nick("ProxyPort")
+                    .blurb("ProxyPort")
+                    .build(),
+
+                glib::ParamSpecBoolean::builder("proxyonion")
+                    .nick("ProxyOnion")
+                    .blurb("ProxyOnion")
+                    .build(),
+
+                glib::ParamSpecInt64::builder("transport")
+                    .nick("Transport")
+                    .blurb("Transport")
+                    .build(),
+
+                glib::ParamSpecBoolean::builder("ipv6")
+                    .nick("IPv6")
+                    .blurb("IPv6")
+                    .build(),
+
+                glib::ParamSpecBoolean::builder("notifications")
+                    .nick("Notifications")
+                    .blurb("Notifications")
+                    .build(),
+
+                glib::ParamSpecBoolean::builder("runinbackground")
+                    .nick("RunInBackground")
+                    .blurb("RunInBackground")
+                    .build(),
+
+                glib::ParamSpecString::builder("captchaid")
+                    .nick("CaptchaID")
+                    .blurb("CaptchaID")
+                    .build(),
+
+                glib::ParamSpecBoolean::builder("captchaloading")
+                    .nick("CaptchaLoading")
+                    .blurb("CaptchaLoading")
+                    .build(),
+
+                glib::ParamSpecString::builder("qrcodetext")
+                    .nick("QRCodeText")
+                    .blurb("QRCodeText")
+                    .build(),
+
 
             ]
         });
@@ -267,7 +201,6 @@ impl ObjectImpl for AppSettings {
 
     fn set_property(
         &self,
-        _obj: &Self::Type,
         _id: usize,
         value: &glib::Value,
         pspec: &glib::ParamSpec,
@@ -421,7 +354,7 @@ impl ObjectImpl for AppSettings {
         }
     }
 
-    fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+    fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
         match pspec.name() {
             "lastretrievaltime" => self.lastretrievaltime.borrow().to_value(),
             "time" => self.time.borrow().to_value(),

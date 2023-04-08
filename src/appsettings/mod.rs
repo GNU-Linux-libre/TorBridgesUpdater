@@ -83,32 +83,32 @@ fn get_save_paths() -> (String, String) {
 
 impl AppSettings {
     pub fn new() -> AppSettings {
-        glib::Object::new(&[
-            ("lastretrievaltime", &(0 as i64)),
-            ("time", &(0 as i64)),
-            ("days", &(0 as i64)),
-            ("hours", &(0 as i64)),
-            ("minutes", &(0 as i64)),
-            ("seconds", &(0 as i64)),
-            ("savetorrc", &false),
-            ("savetorrcpath", &"".to_string()),
-            ("savebridges", &false),
-            ("savebridgespath", &"".to_string()),
-            ("torrcdisableold", &false),
-            ("keepold", &false),
-            ("useproxy", &false),
-            ("proxytype", &(0 as i64)),
-            ("proxyhost", &"".to_string()),
-            ("proxyport", &(0 as i64)),
-            ("proxyonion", &false),
-            ("transport", &(0 as i64)),
-            ("ipv6", &false),
-            ("notifications", &false),
-            ("runinbackground", &false),
-            ("captchaid", &"".to_string()),
-            ("captchaloading", &false),
-            ("qrcodetext", &"".to_string()),
-        ]).expect("Failed to load app settings.")
+        glib::Object::builder()
+            .property("lastretrievaltime", 0 as i64)
+            .property("time", 0 as i64)
+            .property("days", 0 as i64)
+            .property("hours", 0 as i64)
+            .property("minutes", 0 as i64)
+            .property("seconds", 0 as i64)
+            .property("savetorrc", false)
+            .property("savetorrcpath", "")
+            .property("savebridges", false)
+            .property("savebridgespath", "")
+            .property("torrcdisableold", false)
+            .property("keepold", false)
+            .property("useproxy", false)
+            .property("proxytype", 0 as i64)
+            .property("proxyhost", "")
+            .property("proxyport", 0 as i64)
+            .property("proxyonion", false)
+            .property("transport", 0 as i64)
+            .property("ipv6", false)
+            .property("notifications", false)
+            .property("runinbackground", false)
+            .property("captchaid", "")
+            .property("captchaloading", false)
+            .property("qrcodetext", "")
+            .build()
     }
 
 
@@ -197,60 +197,60 @@ impl AppSettings {
             fileconfigoverwrite.write_all(config_default.clone().dump().as_bytes()).unwrap();
             fileconfigoverwrite.sync_all().unwrap();
 
-            return glib::Object::new(&[
-                ("lastretrievaltime", &config_default["lastretrievaltime"].as_i64().unwrap()),
-                ("time", &config_default["time"].as_i64().unwrap()),
-                ("days", &config_default["days"].as_i64().unwrap()),
-                ("hours", &config_default["hours"].as_i64().unwrap()),
-                ("minutes", &config_default["minutes"].as_i64().unwrap()),
-                ("seconds", &config_default["seconds"].as_i64().unwrap()),
-                ("savetorrc", &config_default["savetorrc"].as_bool().unwrap()),
-                ("savetorrcpath", &config_default["savetorrcpath"].as_str().unwrap()),
-                ("savebridges", &config_default["savebridges"].as_bool().unwrap()),
-                ("savebridgespath", &config_default["savebridgespath"].as_str().unwrap()),
-                ("torrcdisableold", &config_default["torrcdisableold"].as_bool().unwrap()),
-                ("keepold", &config_default["keepold"].as_bool().unwrap()),
-                ("useproxy", &config_default["useproxy"].as_bool().unwrap()),
-                ("proxytype", &config_default["proxytype"].as_i64().unwrap()),
-                ("proxyhost", &config_default["proxyhost"].as_str().unwrap()),
-                ("proxyport", &config_default["proxyport"].as_i64().unwrap()),
-                ("proxyonion", &config_default["proxyonion"].as_bool().unwrap()),
-                ("transport", &config_default["transport"].as_i64().unwrap()),
-                ("ipv6", &config_default["ipv6"].as_bool().unwrap()),
-                ("notifications", &config_default["notifications"].as_bool().unwrap()),
-                ("runinbackground", &config_default["runinbackground"].as_bool().unwrap()),
-                ("captchaid", &"".to_string()),
-                ("captchaloading", &false),
-                ("qrcodetext", &"".to_string()),
-            ]).expect("Failed to load app settings.");
+            return glib::Object::builder()
+                .property("lastretrievaltime", config_default["lastretrievaltime"].as_i64().unwrap())
+                .property("time", config_default["time"].as_i64().unwrap())
+                .property("days", config_default["days"].as_i64().unwrap())
+                .property("hours", config_default["hours"].as_i64().unwrap())
+                .property("minutes", config_default["minutes"].as_i64().unwrap())
+                .property("seconds", config_default["seconds"].as_i64().unwrap())
+                .property("savetorrc", config_default["savetorrc"].as_bool().unwrap())
+                .property("savetorrcpath", config_default["savetorrcpath"].as_str().unwrap())
+                .property("savebridges", config_default["savebridges"].as_bool().unwrap())
+                .property("savebridgespath", config_default["savebridgespath"].as_str().unwrap())
+                .property("torrcdisableold", config_default["torrcdisableold"].as_bool().unwrap())
+                .property("keepold", config_default["keepold"].as_bool().unwrap())
+                .property("useproxy", config_default["useproxy"].as_bool().unwrap())
+                .property("proxytype", config_default["proxytype"].as_i64().unwrap())
+                .property("proxyhost", config_default["proxyhost"].as_str().unwrap())
+                .property("proxyport", config_default["proxyport"].as_i64().unwrap())
+                .property("proxyonion", config_default["proxyonion"].as_bool().unwrap())
+                .property("transport", config_default["transport"].as_i64().unwrap())
+                .property("ipv6", config_default["ipv6"].as_bool().unwrap())
+                .property("notifications", config_default["notifications"].as_bool().unwrap())
+                .property("runinbackground", config_default["runinbackground"].as_bool().unwrap())
+                .property("captchaid", "")
+                .property("captchaloading", false)
+                .property("qrcodetext", "")
+                .build();
         }
 
-        glib::Object::new(&[
-            ("lastretrievaltime", &config["lastretrievaltime"].as_i64().unwrap()),
-            ("time", &config["time"].as_i64().unwrap()),
-            ("days", &config["days"].as_i64().unwrap()),
-            ("hours", &config["hours"].as_i64().unwrap()),
-            ("minutes", &config["minutes"].as_i64().unwrap()),
-            ("seconds", &config["seconds"].as_i64().unwrap()),
-            ("savetorrc", &config["savetorrc"].as_bool().unwrap()),
-            ("savetorrcpath", &config["savetorrcpath"].as_str().unwrap()),
-            ("savebridges", &config["savebridges"].as_bool().unwrap()),
-            ("savebridgespath", &config["savebridgespath"].as_str().unwrap()),
-            ("torrcdisableold", &config["torrcdisableold"].as_bool().unwrap()),
-            ("keepold", &config["keepold"].as_bool().unwrap()),
-            ("useproxy", &config["useproxy"].as_bool().unwrap()),
-            ("proxytype", &config["proxytype"].as_i64().unwrap()),
-            ("proxyhost", &config["proxyhost"].as_str().unwrap()),
-            ("proxyport", &config["proxyport"].as_i64().unwrap()),
-            ("proxyonion", &config["proxyonion"].as_bool().unwrap()),
-            ("transport", &config["transport"].as_i64().unwrap()),
-            ("ipv6", &config["ipv6"].as_bool().unwrap()),
-            ("notifications", &config["notifications"].as_bool().unwrap()),
-            ("runinbackground", &config["runinbackground"].as_bool().unwrap()),
-            ("captchaid", &"".to_string()),
-            ("captchaloading", &false),
-            ("qrcodetext", &"".to_string()),
-        ]).expect("Failed to load app settings.")
+        glib::Object::builder()
+            .property("lastretrievaltime", config["lastretrievaltime"].as_i64().unwrap())
+            .property("time", config["time"].as_i64().unwrap())
+            .property("days", config["days"].as_i64().unwrap())
+            .property("hours", config["hours"].as_i64().unwrap())
+            .property("minutes", config["minutes"].as_i64().unwrap())
+            .property("seconds", config["seconds"].as_i64().unwrap())
+            .property("savetorrc", config["savetorrc"].as_bool().unwrap())
+            .property("savetorrcpath", config["savetorrcpath"].as_str().unwrap())
+            .property("savebridges", config["savebridges"].as_bool().unwrap())
+            .property("savebridgespath", config["savebridgespath"].as_str().unwrap())
+            .property("torrcdisableold", config["torrcdisableold"].as_bool().unwrap())
+            .property("keepold", config["keepold"].as_bool().unwrap())
+            .property("useproxy", config["useproxy"].as_bool().unwrap())
+            .property("proxytype", config["proxytype"].as_i64().unwrap())
+            .property("proxyhost", config["proxyhost"].as_str().unwrap())
+            .property("proxyport", config["proxyport"].as_i64().unwrap())
+            .property("proxyonion", config["proxyonion"].as_bool().unwrap())
+            .property("transport", config["transport"].as_i64().unwrap())
+            .property("ipv6", config["ipv6"].as_bool().unwrap())
+            .property("notifications", config["notifications"].as_bool().unwrap())
+            .property("runinbackground", config["runinbackground"].as_bool().unwrap())
+            .property("captchaid", "")
+            .property("captchaloading", false)
+            .property("qrcodetext", "")
+            .build()
     }
 
     pub fn save(&self) {
