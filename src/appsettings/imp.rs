@@ -58,6 +58,7 @@ pub struct AppSettings {
     captchaid: RefCell<Option<String>>,
     captchaloading: RefCell<bool>,
     qrcodetext: RefCell<Option<String>>,
+    backgroundmode: RefCell<bool>,
 }
 
 #[glib::object_subclass]
@@ -190,6 +191,11 @@ impl ObjectImpl for AppSettings {
                 glib::ParamSpecString::builder("qrcodetext")
                     .nick("QRCodeText")
                     .blurb("QRCodeText")
+                    .build(),
+
+                glib::ParamSpecBoolean::builder("backgroundmode")
+                    .nick("BackgroundMode")
+                    .blurb("BackgroundMode")
                     .build(),
 
 
@@ -350,6 +356,12 @@ impl ObjectImpl for AppSettings {
                     .expect("type conformity checked by `Object::set_property`");
                 self.qrcodetext.replace(qrcodetext);
             },
+            "backgroundmode" => {
+                let backgroundmode = value
+                    .get()
+                    .expect("type conformity checked by `Object::set_property`");
+                self.backgroundmode.replace(backgroundmode);
+            },
             _ => unimplemented!(),
         }
     }
@@ -380,6 +392,7 @@ impl ObjectImpl for AppSettings {
             "captchaid" => self.captchaid.borrow().to_value(),
             "captchaloading" => self.captchaloading.borrow().to_value(),
             "qrcodetext" => self.qrcodetext.borrow().to_value(),
+            "backgroundmode" => self.backgroundmode.borrow().to_value(),
             _ => unimplemented!(),
         }
     }

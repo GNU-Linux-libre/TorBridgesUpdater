@@ -108,6 +108,7 @@ impl AppSettings {
             .property("captchaid", "")
             .property("captchaloading", false)
             .property("qrcodetext", "")
+            .property("backgroundmode", true)
             .build()
     }
 
@@ -222,6 +223,7 @@ impl AppSettings {
                 .property("captchaid", "")
                 .property("captchaloading", false)
                 .property("qrcodetext", "")
+                .property("backgroundmode", true)
                 .build();
         }
 
@@ -250,6 +252,7 @@ impl AppSettings {
             .property("captchaid", "")
             .property("captchaloading", false)
             .property("qrcodetext", "")
+            .property("backgroundmode", true)
             .build()
     }
 
