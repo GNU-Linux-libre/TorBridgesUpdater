@@ -1206,7 +1206,12 @@ fn main() {
                     captcha_input.set_text("");
                 }));
 
-                buttongetbridges.connect_clicked(clone!(@strong app_settings, @weak captchawindow, @weak captcha_retry, @weak captcha_submit, @weak captcha_cancel, @weak captcha_loading_error_message, @weak label_timer_last_retrieval, @weak label_timer_until, @strong load_captcha => move |_| {
+                captcha_input.connect_activate(clone!(@strong load_captcha, @weak captcha_input => move |_| {
+                    load_bridges();
+                    captcha_input.set_text("");
+                }));
+
+                buttongetbridges.connect_clicked(clone!(@strong app_settings, @weak captchawindow, @weak captcha_retry, @weak captcha_submit, @weak captcha_input, @weak captcha_cancel, @weak captcha_loading_error_message, @weak label_timer_last_retrieval, @weak label_timer_until, @strong load_captcha => move |_| {
                     let retrieval_new = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
 
                     app_settings.set_property("time", retrieval_new as i64);
@@ -1220,6 +1225,7 @@ fn main() {
                     captcha_submit.set_sensitive(true);
                     captcha_cancel.set_sensitive(true);
                     captcha_loading_error_message.hide();
+                    captcha_input.grab_focus();
                     captchawindow.show();
                     load_captcha();
                 }));
