@@ -220,8 +220,8 @@ fn main() {
                 }));
 
                 let notify_activate = gio::SimpleAction::new("activate", None);
-                notify_activate.connect_activate(clone!(@weak mainwindow => move |_, _| {
-                    mainwindow.show();
+                notify_activate.connect_activate(clone!(@weak app => move |_, _| {
+                    app.activate();
                 }));
 
                 app.add_action(&notify_activate);
@@ -1380,7 +1380,7 @@ fn main() {
 
                                 #[cfg(target_os = "windows")]
                                 {
-                                    mainwindow.show();
+                                    app.activate();
                                 }
                             }
 
