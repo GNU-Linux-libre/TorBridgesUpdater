@@ -548,6 +548,7 @@ fn main() {
                     app.quit();
                 }));
 
+                buttongetbridges.grab_focus();
                 mainwindow.show();
 
 
@@ -960,11 +961,12 @@ fn main() {
 
                 let channelbridges: (gtk::glib::Sender<RequestResult>, gtk::glib::Receiver<RequestResult>) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
 
-                channelbridges.1.attach(None, clone!(@strong app_settings, @weak captchawindow, @weak captcha_load, @weak captcha_loading_message, @weak captcha_input, @weak captcha_loading_error_message, @strong load_captcha, @weak bridgeswindow, @weak captcha_retry, @weak captcha_submit, @weak captcha_cancel, @strong bridges_output_text_buffer => @default-return glib::Continue(false), move |bridges_result| {
+                channelbridges.1.attach(None, clone!(@strong app_settings, @weak captchawindow, @weak captcha_load, @weak captcha_loading_message, @weak captcha_input, @weak captcha_loading_error_message, @strong load_captcha, @weak bridgeswindow, @weak captcha_retry, @weak captcha_submit, @weak captcha_cancel, @weak bridges_output_text, @strong bridges_output_text_buffer => @default-return glib::Continue(false), move |bridges_result| {
                     if captchawindow.is_visible() {
                         match bridges_result {
                             Ok(bridges) =>  {
                                 captchawindow.hide();
+                                bridges_output_text.grab_focus();
                                 bridgeswindow.show();
 
                                 bridges_output_text_buffer.set_text(&bridges.1.clone());
