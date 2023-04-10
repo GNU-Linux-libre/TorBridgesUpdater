@@ -46,7 +46,7 @@ use gtk::{gio, gio::{MemoryInputStream, Cancellable}};
 use gtk::{glib, glib::{Bytes, clone}};
 
 const APP_ID: &str = "com.yakovlevegor.TorBridgesUpdater";
-const APP_VERSION: &str = "0.1.1";
+const APP_VERSION: &str = "0.1.2";
 const APP_ICON: &'static [u8] = include_bytes!("../icons/logo.png");
 
 const ABOUT_AUTHOR: &str = "Egor Yakovlev (yakovlevegor)";
