@@ -55,7 +55,7 @@ const ABOUT_WEBSITE: &str = "github.com/yakovlevegor/TorBridgesUpdater";
 const TOR_NOTICE: &'static [u8] = include_bytes!("../tor_notice.txt");
 const LICENSE: &'static [u8] = include_bytes!("../LICENSE");
 
-const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0";
+const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0";
 const BRIDGES_URL: &str = "https://bridges.torproject.org/bridges/";
 const BRIDGES_URL_ONION: &str = "http://yq5jjvr7drkjrelzhut7kgclfuro65jjlivyzfmxiq2kyv5lickrl4qd.onion/bridges/";
 
