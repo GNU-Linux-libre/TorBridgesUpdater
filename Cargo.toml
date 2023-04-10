@@ -1,13 +1,13 @@
 [package]
 name = "tor_bridges_updater"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 build = "build.rs"
 
 [package.metadata.winresource]
 ProductName = "Tor Bridges Updater"
 FileDescription = "Update Tor bridges on a schedule" 
-ProductVersion = "0.1.0"
+ProductVersion = "0.1.1"
 OriginalFilename = "TorBridgesUpdater.exe"
 LegalCopyright = "Copyright ©"
 

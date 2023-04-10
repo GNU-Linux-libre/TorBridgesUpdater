@@ -13,11 +13,11 @@
 		<key>CFBundleIdentifier</key>
 		<string>com.yakovlevegor.TorBridgesUpdater</string>
 		<key>CFBundleVersion</key>
-		<string>0.1.0</string>
+		<string>0.1.1</string>
 		<key>CFBundleGetInfoString</key>
 		<string>Update your Tor bridges on a schedule</string>
 		<key>CFBundleShortVersionString</key>
-		<string>0.1.0</string>
+		<string>0.1.1</string>
 		<key>CFBundleIconFile</key>
 		<string>icon.icns</string>
 	</dict>
