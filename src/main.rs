@@ -457,7 +457,7 @@ fn main() {
                             minutes_entry.value() == app_settings.property::<i64>("minutes") as f64 &&
                             seconds_entry.value() == app_settings.property::<i64>("seconds") as f64 &&
 
-                            updbrdgs.is_active() == app_settings.property::<bool>("savetorrc") && 
+                            updbrdgs.is_active() == app_settings.property::<bool>("savetorrc") &&
                             torrcfileentry.text() == app_settings.property::<String>("savetorrcpath") &&
                             disableold.is_active() == app_settings.property::<bool>("torrcdisableold") &&
 
@@ -492,7 +492,7 @@ fn main() {
                         app_settings.set_property("minutes", minutes_entry.value() as i64);
                         app_settings.set_property("seconds", seconds_entry.value() as i64);
 
-                        app_settings.set_property("savetorrc", updbrdgs.is_active()); 
+                        app_settings.set_property("savetorrc", updbrdgs.is_active());
                         app_settings.set_property("savetorrcpath", torrcfileentry.text());
                         app_settings.set_property("torrcdisableold", disableold.is_active());
 
