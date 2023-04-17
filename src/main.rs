@@ -1514,9 +1514,9 @@ fn get_captcha(transport: i64, ipv6: bool, use_proxy: bool, proxy_protocol: i64,
     if let Ok(response) = client.build().unwrap().get(url).send() {
         if let Ok(body) = response.text() {
 
-            let captchapattern = Regex::new("<div id=\"bridgedb-captcha-container\">\\s+<div id=\"bridgedb-captcha\" class=\"pb-3\">\\s+<img alt=\"Your browser is not displaying images properly.\" src=\"data:image/jpeg;base64,([^\"]*)").unwrap();
+            let captchapattern = Regex::new("<div class=\"container-narrow\" id=\"captcha-submission-container\">\\s+<div class=\"container-fluid container-fluid-inner-5\">\\s+<div class=\"box\" id=\"captcha-box\">\\s+<img alt=\"Your browser is not displaying images properly.\" src=\"data:image/jpeg;base64,([^\"]*)").unwrap();
 
-            let captchaidpattern = Regex::new("<input type=\"hidden\"\\s+name=\"captcha_challenge_field\"\\s+value=\"([^\"]*)").unwrap();
+            let captchaidpattern = Regex::new("<input type=\"hidden\"\\s+form=\"captchaSubmission\"\\s+name=\"captcha_challenge_field\"\\s+id=\"captcha_challenge_field\"\\s+value=\"([^\"]*)").unwrap();
 
             if captchapattern.captures(&body).iter().count() > 0 {
 
@@ -1598,10 +1598,10 @@ fn get_bridges(transport: i64, ipv6: bool, use_proxy: bool, proxy_protocol: i64,
     if let Ok(response) = client.build().unwrap().post(url).form(&[("captcha_challenge_field", captchaid), ("captcha_response_field", captchasolved)]).send() {
         if let Ok(body) = response.text() {
 
-            let parsebridgelines = Regex::new("<div id=\"bridgelines\" class=\"p-4 mb-3\">\\s+\\n([^\"]*)<br />\\s+</div>\\s").unwrap();
+            let parsebridgelines = Regex::new("<div class=\"bridge-lines\" id=\"bridgelines\">\n(([^<]*<br />\n)+)").unwrap();
             let parsebridgeqrcode = Regex::new("<img title=\"QRCode for your bridge lines from BridgeDB\"\\s+src=\"data:image/jpeg;base64,([^<]*)\"\\s+alt=\"\"\\s+/>\\s").unwrap();
 
-            let captchapattern = Regex::new("<div id=\"bridgedb-captcha-container\">\\s+<div id=\"bridgedb-captcha\" class=\"pb-3\">\\s+<img alt=\"Your browser is not displaying images properly.\" src=\"data:image/jpeg;base64,([^\"]*)").unwrap();
+            let captchapattern = Regex::new("<div class=\"container-narrow\" id=\"captcha-submission-container\">\\s+<div class=\"container-fluid container-fluid-inner-5\">\\s+<div class=\"box\" id=\"captcha-box\">\\s+<img alt=\"Your browser is not displaying images properly.\" src=\"data:image/jpeg;base64,([^\"]*)").unwrap();
 
             if parsebridgelines.captures(&body).iter().count() == 0 || parsebridgeqrcode.captures(&body).iter().count() == 0 {
                 return Err(1);
