@@ -18,7 +18,7 @@ This utility was **not** made by Tor Project:
 
 **Tor Bridges Updater** is available on Windows, macOS and Linux.
 
-[Get the latest release](https://github.com/yakovlevegor/TorBridgesUpdater/releases)
+[Get the latest release](https://gitlab.com/yakovlevegor/TorBridgesUpdater/-/releases)
 
 **To install** on Windows and Linux, unpack the application's folder and run the install* script. On macOS just copy the .app to preferable directory, and run it from there.
 
