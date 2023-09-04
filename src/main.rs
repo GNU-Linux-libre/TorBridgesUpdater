@@ -49,7 +49,7 @@ const APP_ID: &str = "com.yakovlevegor.TorBridgesUpdater";
 const APP_VERSION: &str = "0.1.4";
 const APP_ICON: &'static [u8] = include_bytes!("../icons/logo.png");
 
-const ABOUT_AUTHOR: &str = "Egor Yakovlev (yakovlevegor)";
+const ABOUT_AUTHOR: &str = "Egor Olegovich Yakovlev (yakovlevegor)";
 const ABOUT_WEBSITE: &str = "gitlab.com/yakovlevegor/TorBridgesUpdater";
 
 const TOR_NOTICE: &'static [u8] = include_bytes!("../tor_notice.txt");
