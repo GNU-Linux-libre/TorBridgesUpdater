@@ -802,9 +802,9 @@ fn main() {
                         captcha_load.show();
                     }));
 
-                    let channelcaptcha: (gtk::glib::Sender<RequestResult>, gtk::glib::Receiver<RequestResult>) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
+                    let channelcaptcha: (gtk::glib::Sender<RequestResult>, gtk::glib::Receiver<RequestResult>) = glib::MainContext::channel(glib::source::Priority::DEFAULT);
 
-                    channelcaptcha.1.attach(None, clone!(@strong app_settings, @weak captchawindow, @weak captcha_load, @weak captcha_loading_message => @default-return glib::Continue(false), move |captcha_result| {
+                    channelcaptcha.1.attach(None, clone!(@strong app_settings, @weak captchawindow, @weak captcha_load, @weak captcha_loading_message => @default-return glib::ControlFlow::Break, move |captcha_result| {
                         app_settings.set_property("captchaloading", false);
                         if captchawindow.is_visible() {
                             match captcha_result {
@@ -843,10 +843,10 @@ fn main() {
                                 }
                             }
                         }
-                        glib::Continue(true)
+                        glib::ControlFlow::Continue
                     }));
 
-                    let load_captcha = clone!(@strong app_settings, @weak captcha_load, @weak captcha_loading_message, @weak captcha_input => @default-return glib::Continue(false), move || {
+                    let load_captcha = clone!(@strong app_settings, @weak captcha_load, @weak captcha_loading_message, @weak captcha_input => @default-return glib::ControlFlow::Break, move || {
                         if app_settings.property::<bool>("captchaloading") == false {
                             let captchachannelsend = channelcaptcha.0.clone();
 
@@ -870,7 +870,7 @@ fn main() {
                             });
                         }
 
-                        glib::Continue(false)
+                        glib::ControlFlow::Break
                     });
 
                     captcha_retry.connect_clicked(clone!(@weak captcha_loading_error_message, @strong load_captcha => move |_| {
@@ -882,9 +882,9 @@ fn main() {
                         captchawindow.destroy();
                     }));
 
-                    let channelbridges: (gtk::glib::Sender<RequestResult>, gtk::glib::Receiver<RequestResult>) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
+                    let channelbridges: (gtk::glib::Sender<RequestResult>, gtk::glib::Receiver<RequestResult>) = glib::MainContext::channel(glib::source::Priority::DEFAULT);
 
-                    channelbridges.1.attach(None, clone!(@weak app, @strong app_settings, @weak captchawindow, @weak captcha_load, @weak captcha_loading_message, @weak captcha_input, @weak captcha_loading_error_message, @strong load_captcha, @weak captcha_retry, @weak captcha_submit, @weak captcha_cancel => @default-return glib::Continue(false), move |bridges_result| {
+                    channelbridges.1.attach(None, clone!(@weak app, @strong app_settings, @weak captchawindow, @weak captcha_load, @weak captcha_loading_message, @weak captcha_input, @weak captcha_loading_error_message, @strong load_captcha, @weak captcha_retry, @weak captcha_submit, @weak captcha_cancel => @default-return glib::ControlFlow::Break, move |bridges_result| {
                         if captchawindow.is_visible() {
                             match bridges_result {
                                 Ok(bridges) =>  {
@@ -894,13 +894,13 @@ fn main() {
                                     bridges_output_text.grab_focus();
 
 /* Bridges window start */
-                                    let channelclipboardmessage: (gtk::glib::Sender<bool>, gtk::glib::Receiver<bool>) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
+                                    let channelclipboardmessage: (gtk::glib::Sender<bool>, gtk::glib::Receiver<bool>) = glib::MainContext::channel(glib::source::Priority::DEFAULT);
 
                                     let label_clipboard_copied: Label = Label::builder().halign(Align::Center).label(locale::get_translation().BRIDGES_WINDOW_CLIPBOARD_COPIED).build();
 
-                                    channelclipboardmessage.1.attach(None, clone!(@weak label_clipboard_copied => @default-return glib::Continue(false), move |_| {
+                                    channelclipboardmessage.1.attach(None, clone!(@weak label_clipboard_copied => @default-return glib::ControlFlow::Break, move |_| {
                                         label_clipboard_copied.hide();
-                                        glib::Continue(true)
+                                        glib::ControlFlow::Continue
                                     }));
 
                                     let icon_copy_clipboard_button = Image::builder().valign(Align::Center).icon_name("edit-copy-symbolic").build();
@@ -1268,7 +1268,7 @@ fn main() {
                             captcha_cancel.set_sensitive(true);
                         }
 
-                        glib::Continue(true)
+                        glib::ControlFlow::Continue
                     }));
 
                     let load_bridges = clone!(@strong app_settings, @strong load_captcha, @weak captcha_input, @weak captcha_submit, @weak captcha_retry, @weak captcha_cancel, @weak captcha_loading_error_message => move || {
@@ -1350,9 +1350,9 @@ fn main() {
 
                 app.set_accels_for_action("app.close", &["<Primary>W"]);
 
-                let channeltimer: (gtk::glib::Sender<bool>, gtk::glib::Receiver<bool>) = glib::MainContext::channel(glib::PRIORITY_DEFAULT);
+                let channeltimer: (gtk::glib::Sender<bool>, gtk::glib::Receiver<bool>) = glib::MainContext::channel(glib::source::Priority::DEFAULT);
 
-                channeltimer.1.attach(None, clone!(@weak app, @weak label_timer, @weak label_timer_until, @weak progressload, @weak mainwindow, @strong app_settings => @default-return glib::Continue(true), move |_| {
+                channeltimer.1.attach(None, clone!(@weak app, @weak label_timer, @weak label_timer_until, @weak progressload, @weak mainwindow, @strong app_settings => @default-return glib::ControlFlow::Continue, move |_| {
                     let mut next_time: u64 = (app_settings.property::<i64>("time") + (app_settings.property::<i64>("days")*24*60*60) + (app_settings.property::<i64>("hours")*60*60) + (app_settings.property::<i64>("minutes")*60) + app_settings.property::<i64>("seconds")) as u64;
                     let next_time_since_retrieval: u64 = (app_settings.property::<i64>("lastretrievaltime") + (app_settings.property::<i64>("days")*24*60*60) + (app_settings.property::<i64>("hours")*60*60) + (app_settings.property::<i64>("minutes")*60) + app_settings.property::<i64>("seconds")) as u64;
                     let now_time = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
@@ -1439,7 +1439,7 @@ fn main() {
                         progressload.set_fraction(until_next as f64/full_progress as f64);
 
                     }
-                    glib::Continue(true)
+                    glib::ControlFlow::Continue
                 }));
 
                 thread::spawn(move || {
